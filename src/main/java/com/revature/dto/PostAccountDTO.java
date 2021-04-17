@@ -1,43 +1,45 @@
-package com.revature.model;
+package com.revature.dto;
 
-public class Account {
-
-	private int id;
+public class PostAccountDTO {
+	
 	private String accountName;
 	private float balance;
-	public Account(int id, String accountName, float balance) {
+	
+	public PostAccountDTO() {
 		super();
-		this.id = id;
+	}
+
+	public PostAccountDTO(String accountName, float balance) {
+		super();
 		this.accountName = accountName;
 		this.balance = balance;
 	}
-	public int getId() {
-		return id;
-	}
-	public void setId(int id) {
-		this.id = id;
-	}
+
 	public String getAccountName() {
 		return accountName;
 	}
+
 	public void setAccountName(String accountName) {
 		this.accountName = accountName;
 	}
+
 	public float getBalance() {
 		return balance;
 	}
+
 	public void setBalance(float balance) {
 		this.balance = balance;
 	}
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + ((accountName == null) ? 0 : accountName.hashCode());
 		result = prime * result + Float.floatToIntBits(balance);
-		result = prime * result + id;
 		return result;
 	}
+
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)
@@ -46,7 +48,7 @@ public class Account {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		Account other = (Account) obj;
+		PostAccountDTO other = (PostAccountDTO) obj;
 		if (accountName == null) {
 			if (other.accountName != null)
 				return false;
@@ -54,14 +56,12 @@ public class Account {
 			return false;
 		if (Float.floatToIntBits(balance) != Float.floatToIntBits(other.balance))
 			return false;
-		if (id != other.id)
-			return false;
 		return true;
 	}
+
 	@Override
 	public String toString() {
-		return "Account [id=" + id + ", accountName=" + accountName + ", balance=" + balance + "]";
+		return "PostAccountDTO [accountName=" + accountName + ", balance=" + balance + "]";
 	}
-	
-	
+
 }

@@ -41,12 +41,26 @@ public class ClientController implements Controller {
 		ctx.json(client);
 		ctx.status(201);
 	};
+	
+	//not working
+	private Handler updateClientById = ctx -> {
+		String id = ctx.pathParam("id");
+		
+		PostClientDTO clientDTO = ctx.bodyAsClass(PostClientDTO.class);
+		
+		Client client = this.clientService.updateClient(id, clientDTO);
+		
+		ctx.json(client);
+		ctx.status(201);
+	};
 
 	@Override
 	public void mapEndpoints(Javalin app) {
 		app.get("/clients", getClients);
 		app.get("/clients/:id", getClientById); 
 		app.post("/clients", addClient);
+		app.put("/clients/:id", updateClientById);
+		
 	}
 
 }

@@ -14,72 +14,71 @@ import com.revature.model.Client;
 import com.revature.util.ConnectionUtil;
 
 public class ClientRepository {
-	
-	public Client getClientById(String clientId) throws DatabaseException  {
-		Client client = null;
-		try (Connection connection = ConnectionUtil.getConnection()) {
-			String sql = "SELECT * FROM clients c WHERE c.id = ?";
-			
-			PreparedStatement pstmt = connection.prepareStatement(sql);
-			
-			pstmt.setString(1, clientId);
-			
-			ResultSet rs = pstmt.executeQuery();
-			
-			if(rs.next()) {
-				int id = rs.getInt("id");
-				String retrievedFirstName = rs.getString("first_name");
-				String retrievedLastName = rs.getString("last_name");
-				client = new Client(id, retrievedFirstName, retrievedLastName);		
-			}
-			
-			return client;
-			
-			
-		} catch (SQLException e) {
-			throw new DatabaseException("Something went wrong when trying to get a connection. "
-					+ "Exception message: " + e.getMessage());
-		}
-	}
 
 	public ArrayList<Client> getAllClients() throws DatabaseException {
 		ArrayList<Client> clients = new ArrayList<Client>();
 		try (Connection connection = ConnectionUtil.getConnection()) {
 			String sql = "SELECT * from clients c";
-			
+
 			PreparedStatement pstmt = connection.prepareStatement(sql);
-			
+
 			ResultSet rs = pstmt.executeQuery();
-			while(rs.next()) {
+			while (rs.next()) {
 				int clientId = rs.getInt("id");
 				String retrievedFirstName = rs.getString("first_name");
 				String retrievedLastName = rs.getString("last_name");
 				Client client = new Client(clientId, retrievedFirstName, retrievedLastName);
 				clients.add(client);
 			}
-			
+
 		} catch (SQLException e) {
-			throw new DatabaseException("Something went wrong wehen trying to get a connection. "
-					+ "Exception message: " + e.getMessage());
+			throw new DatabaseException(
+					"Something went wrong wehen trying to get a connection. " + "Exception message: " + e.getMessage());
 		}
 		return clients;
 	}
-	
+
+	public Client getClientById(String clientId) throws DatabaseException {
+		Client client = null;
+		try (Connection connection = ConnectionUtil.getConnection()) {
+			String sql = "SELECT * FROM clients c WHERE c.id = ?";
+
+			PreparedStatement pstmt = connection.prepareStatement(sql);
+
+			pstmt.setString(1, clientId);
+
+			ResultSet rs = pstmt.executeQuery();
+
+			if (rs.next()) {
+				int id = rs.getInt("id");
+				String retrievedFirstName = rs.getString("first_name");
+				String retrievedLastName = rs.getString("last_name");
+				client = new Client(id, retrievedFirstName, retrievedLastName);
+			}
+
+			return client;
+
+		} catch (SQLException e) {
+			throw new DatabaseException(
+					"Something went wrong when trying to get a connection. " + "Exception message: " + e.getMessage());
+		}
+	}
+
 	public Client addClient(PostClientDTO clientDTO) throws DatabaseException, AddClientException {
 		try (Connection connection = ConnectionUtil.getConnection()) {
 			String sql = "INSERT INTO clients (first_name, last_name) VALUES (?, ?)";
-			
+
 			PreparedStatement pstmt = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
-			
+
 			pstmt.setString(1, clientDTO.getFirstName());
 			pstmt.setString(2, clientDTO.getLastName());
-			
+
 			int recordsAdded = pstmt.executeUpdate();
-			
+
 			if (recordsAdded != 1) {
 				throw new DatabaseException("Couldn't add client to the database");
 			}
-			
+
 			ResultSet rs = pstmt.getGeneratedKeys();
 			if (rs.next()) {
 				int id = rs.getInt(1);
@@ -89,11 +88,43 @@ public class ClientRepository {
 			} else {
 				throw new DatabaseException("Client id was not generated, and therefore adding a client failed");
 			}
+
+		} catch (SQLException e) {
+			throw new DatabaseException(
+					"Something went wrong when trying to get a connection. " + "Exception message: " + e.getMessage());
+		}
+	}
+
+	public Client updateClientById(String clientId, PostClientDTO clientDTO) throws DatabaseException {
+		
+		try (Connection connection = ConnectionUtil.getConnection()) {
+			String sql = "UPDATE clients c SET first_name=?, last_name=? WHERE c.id=?";
+			
+			PreparedStatement pstmt = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+			
+			pstmt.setString(1, clientDTO.getFirstName());
+			pstmt.setString(2, clientDTO.getLastName());
+			pstmt.setString(3, clientId);
+
+			int recordsAdded = pstmt.executeUpdate();
+			
+			if (recordsAdded != 1) {
+				throw new DatabaseException("Couldn't update client in the database");
+			}
+			
+			if (recordsAdded > 0) {
+				int id = Integer.parseInt(clientId);
+				Client updatedClient = new Client(id, clientDTO.getFirstName(), clientDTO.getLastName());
+				updatedClient.setAccounts(new ArrayList<>());
+				return updatedClient;
+			} else {
+				throw new DatabaseException("Client id was not found, and therefore client update failed");
+			}
 			
 		} catch (SQLException e) {
-			throw new DatabaseException("Something went wrong when trying to get a connection. "
-					+ "Exception message: " + e.getMessage());
+			
 		}
+		return null;
 	}
 
 //	public Ship getShipByName(String shipName) throws DatabaseException {
@@ -121,9 +152,8 @@ public class ClientRepository {
 //					+ "Exception message: " + e.getMessage());
 //		}
 //	}
-	
-}
 
+}
 
 //	public Client getClientById(int id) {
 //		
@@ -133,6 +163,6 @@ public class ClientRepository {
 //		return null;
 //		
 //	}
-	// Perform database operations such as retrieving a client, updating a client's data, 
-	// adding a new client, etc..
-
+// Perform database operations such as retrieving a client, updating a client's
+// data,
+// adding a new client, etc..
