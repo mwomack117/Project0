@@ -53,30 +53,31 @@ public class ClientService {
 	public Client addClient(PostClientDTO clientDTO) throws DatabaseException, AddClientException {
 
 		if (clientDTO.getFirstName().trim().equals("") || clientDTO.getLastName().trim().equals("")) {
-			throw new AddClientException("User tried to add a client with a blank firstname and lastname");
+			throw new AddClientException("User tried to add a client with a blank firstname and/or lastname");
 		}
 
 		return clientRepository.addClient(clientDTO);
 	}
 
-	// Update a client
-	public Client updateClient(String clientId, PostClientDTO clientDTO) throws DatabaseException, BadParameterException, ClientNotFoundException {
+	// Update a client if they exist
+	public Client updateClient(String clientId, PostClientDTO clientDTO)
+			throws DatabaseException, BadParameterException, ClientNotFoundException {
 		try {
 			
-			int id = Integer.parseInt(clientId);
-
+			getClientById(clientId); // check that client id exists first
+			
 			Client client = clientRepository.updateClientById(clientId, clientDTO);
 			
-			if (client == null) {
-				throw new ClientNotFoundException("Client with id of " + id + " was not found");
-			}
-			
 			return client;
-			//return clientRepository.updateClient(clientId, clientDTO);
 		} catch (NumberFormatException e) {
 			throw new BadParameterException("Client id must be an int. User provided " + clientId);
 		}
-		
+
+	}
+
+	public void deleteClient(String clientId) throws DatabaseException, BadParameterException, ClientNotFoundException {
+		getClientById(clientId); // check that client id exists first
+		clientRepository.deleteClientById(clientId);
 	}
 
 }

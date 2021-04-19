@@ -2,14 +2,20 @@ package com.revature.controller;
 
 import java.util.ArrayList;
 
+import com.revature.app.Application;
 import com.revature.dto.PostClientDTO;
 import com.revature.model.Client;
 import com.revature.service.ClientService;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import io.javalin.Javalin;
 import io.javalin.http.Handler;
 
 public class ClientController implements Controller {
+	
+	private static Logger logger = LoggerFactory.getLogger(ClientController.class);
 
 	private ClientService clientService;
 
@@ -25,10 +31,11 @@ public class ClientController implements Controller {
 	};
 	
 	private Handler getClientById = ctx -> {
-		String id = ctx.pathParam("id");
+		String clientId = ctx.pathParam("clientId");
 		
-		Client client = this.clientService.getClientById(id);
+		Client client = clientService.getClientById(clientId);
 		
+		logger.info("A client with id of: " + clientId + " was retrieved from the database");
 		ctx.json(client);
 		ctx.status(200);
 	};
@@ -36,30 +43,44 @@ public class ClientController implements Controller {
 	private Handler addClient = ctx -> {
 		PostClientDTO clientDTO = ctx.bodyAsClass(PostClientDTO.class);
 
-		Client client = this.clientService.addClient(clientDTO);
-
+		Client client = clientService.addClient(clientDTO);
+		
+		logger.info("A client was added to the database with id of: " + client.getId());
 		ctx.json(client);
 		ctx.status(201);
 	};
 	
-	//not working
 	private Handler updateClientById = ctx -> {
-		String id = ctx.pathParam("id");
+		String clientId = ctx.pathParam("clientId");
 		
 		PostClientDTO clientDTO = ctx.bodyAsClass(PostClientDTO.class);
 		
-		Client client = this.clientService.updateClient(id, clientDTO);
+		Client client = clientService.updateClient(clientId, clientDTO);
 		
+		logger.info("Client with id of " + client.getId() + " was updated in the database");
 		ctx.json(client);
 		ctx.status(201);
 	};
+	
+	private Handler deleteClientById = ctx -> {
+		String clientId = ctx.pathParam("clientId");
+		
+		clientService.deleteClient(clientId);
+		
+		logger.info("Client with id of " + clientId + " successfully deleted in the database");
+		ctx.result("Client with Id of " + clientId + " successfully deleted from database");
+		ctx.status(201);
+	};
+	
+	
 
 	@Override
 	public void mapEndpoints(Javalin app) {
 		app.get("/clients", getClients);
-		app.get("/clients/:id", getClientById); 
+		app.get("/clients/:clientId", getClientById); 
 		app.post("/clients", addClient);
-		app.put("/clients/:id", updateClientById);
+		app.put("/clients/:clientId", updateClientById);
+		app.delete("/clients/:clientId", deleteClientById);
 		
 	}
 

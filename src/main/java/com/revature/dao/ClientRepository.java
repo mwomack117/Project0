@@ -83,7 +83,7 @@ public class ClientRepository {
 			if (rs.next()) {
 				int id = rs.getInt(1);
 				Client newClient = new Client(id, clientDTO.getFirstName(), clientDTO.getLastName());
-				newClient.setAccounts(new ArrayList<>());
+				//newClient.setAccounts(new ArrayList<>());
 				return newClient;
 			} else {
 				throw new DatabaseException("Client id was not generated, and therefore adding a client failed");
@@ -100,7 +100,7 @@ public class ClientRepository {
 		try (Connection connection = ConnectionUtil.getConnection()) {
 			String sql = "UPDATE clients c SET first_name=?, last_name=? WHERE c.id=?";
 			
-			PreparedStatement pstmt = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+			PreparedStatement pstmt = connection.prepareStatement(sql);
 			
 			pstmt.setString(1, clientDTO.getFirstName());
 			pstmt.setString(2, clientDTO.getLastName());
@@ -115,7 +115,7 @@ public class ClientRepository {
 			if (recordsAdded > 0) {
 				int id = Integer.parseInt(clientId);
 				Client updatedClient = new Client(id, clientDTO.getFirstName(), clientDTO.getLastName());
-				updatedClient.setAccounts(new ArrayList<>());
+				//updatedClient.setAccounts(new ArrayList<>());
 				return updatedClient;
 			} else {
 				throw new DatabaseException("Client id was not found, and therefore client update failed");
@@ -125,6 +125,23 @@ public class ClientRepository {
 			
 		}
 		return null;
+	}
+
+	public void deleteClientById(String clientId) throws DatabaseException {
+		
+		try (Connection connection = ConnectionUtil.getConnection()) {
+			String sql = "DELETE FROM clients WHERE id=?";
+
+			PreparedStatement pstmt = connection.prepareStatement(sql);
+
+			pstmt.setString(1, clientId);
+
+			pstmt.executeUpdate();
+
+		} catch (SQLException e) {
+			throw new DatabaseException(
+					"Something went wrong when trying to get a connection. " + "Exception message: " + e.getMessage());
+		}
 	}
 
 //	public Ship getShipByName(String shipName) throws DatabaseException {
