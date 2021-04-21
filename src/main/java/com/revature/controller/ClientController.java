@@ -1,10 +1,13 @@
 package com.revature.controller;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import com.revature.app.Application;
 import com.revature.dto.PostClientDTO;
+import com.revature.model.Account;
 import com.revature.model.Client;
+import com.revature.service.AccountService;
 import com.revature.service.ClientService;
 
 import org.slf4j.Logger;
@@ -18,9 +21,15 @@ public class ClientController implements Controller {
 	private static Logger logger = LoggerFactory.getLogger(ClientController.class);
 
 	private ClientService clientService;
+	
+	// test 
+	private AccountService accountService;
 
 	public ClientController() {
 		this.clientService = new ClientService();
+		
+		//test
+		this.accountService = new AccountService();
 	}
 
 	private Handler getClients = ctx -> {
@@ -35,8 +44,14 @@ public class ClientController implements Controller {
 		
 		Client client = clientService.getClientById(clientId);
 		
+		List<Account> accountList = accountService.getAccountsByClientId(clientId);
+		
+		Client clientWithAllAccounts = new Client(client.getId(), client.getFirstName(), client.getLastName());
+		clientWithAllAccounts.setAccounts(accountList);
+		
+		
 		logger.info("A client with id of: " + clientId + " was retrieved from the database");
-		ctx.json(client);
+		ctx.json(clientWithAllAccounts);
 		ctx.status(200);
 	};
 

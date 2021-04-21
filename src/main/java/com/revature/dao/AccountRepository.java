@@ -122,8 +122,9 @@ public class AccountRepository {
 		Account account = null;
 
 		try (Connection connection = ConnectionUtil.getConnection()) {
-			String sql = "SELECT a.id, a.account_name, a.balance FROM clients c "
-					+ "INNER JOIN accounts a ON c.id = a.client_id WHERE a.id = ?";
+//			String sql = "SELECT a.id, a.account_name, a.balance FROM clients c "
+//					+ "INNER JOIN accounts a ON c.id = a.client_id WHERE a.id = ?";
+			String sql =  "SELECT * FROM accounts WHERE accounts.id=?";
 
 			PreparedStatement pstmt = connection.prepareStatement(sql);
 
@@ -166,13 +167,14 @@ public class AccountRepository {
 			if (recordsAdded > 0) {
 				int id = Integer.parseInt(accountId);
 				updatedAccount = new Account(id, accountDTO.getAccountName(), accountDTO.getBalance());
+				return updatedAccount;
 			}
-			return updatedAccount;
 
 		} catch (SQLException e) {
 			throw new DatabaseException(
 					"Something went wrong when trying to get a connection. " + "Exception message: " + e.getMessage());
 		}
+		return null;
 	}
 
 	public void deleteAccountById(String accountId) throws SQLException, DatabaseException {

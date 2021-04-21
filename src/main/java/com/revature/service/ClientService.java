@@ -35,12 +35,12 @@ public class ClientService {
 			throws DatabaseException, BadParameterException, ClientNotFoundException {
 
 		try {
-			int id = Integer.parseInt(clientId);
+			Integer.parseInt(clientId);
 
 			Client client = clientRepository.getClientById(clientId);
 
 			if (client == null) {
-				throw new ClientNotFoundException("Client with id of " + id + " was not found");
+				throw new ClientNotFoundException("Client with id of " + clientId + " was not found");
 			}
 
 			return client;
@@ -63,7 +63,7 @@ public class ClientService {
 	public Client updateClient(String clientId, PostClientDTO clientDTO)
 			throws DatabaseException, BadParameterException, ClientNotFoundException {
 		try {
-			
+			Integer.parseInt(clientId);
 			getClientById(clientId); // check that client id exists first
 			
 			Client client = clientRepository.updateClientById(clientId, clientDTO);
@@ -76,8 +76,14 @@ public class ClientService {
 	}
 
 	public void deleteClient(String clientId) throws DatabaseException, BadParameterException, ClientNotFoundException {
-		getClientById(clientId); // check that client id exists first
-		clientRepository.deleteClientById(clientId);
+		try {
+			Integer.parseInt(clientId);
+			getClientById(clientId); // check that client id exists first
+			clientRepository.deleteClientById(clientId);
+			
+		} catch (NumberFormatException e) {
+			throw new BadParameterException("Client id must be an int. User provided " + clientId);
+		}
 	}
 
 }

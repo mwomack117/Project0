@@ -28,6 +28,7 @@ public class ConnectionUtil {
 		/*
 		 * Environment variable approach
 		 */
+		
 		String username = System.getenv("db_username");
 		String password = System.getenv("db_password");
 		String connectionString = System.getenv("db_url");

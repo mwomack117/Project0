@@ -5,6 +5,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import com.revature.dao.AccountRepository;
 import com.revature.dao.ClientRepository;
 import com.revature.dto.PostAccountDTO;
@@ -55,22 +56,18 @@ public class AccountService {
 	}
 
 	public Account addAccount(String stringId, PostAccountDTO accountDTO)
-			throws AddAccountException, BadParameterException, DatabaseException {
+			throws AddAccountException, BadParameterException, DatabaseException, InvalidFormatException, NullPointerException{
 		try {
 			Connection connection = ConnectionUtil.getConnection();// Have control over a connection object here
 			this.accountRepository.setConnection(connection); // pass the connection into the DAO
 			connection.setAutoCommit(false); // Turn off autocommit so we have control over commit v. not committing
-
+			
 			if (accountDTO.getAccountName().trim().equals("")) {
 				throw new AddAccountException("Account name cannot be blank");
 			}
 			if (accountDTO.getBalance() < 0) {
 				throw new AddAccountException("Account balance cannot be a negative number");
 			}
-
-//			if (accountDTO.getBalance().equals((String) ) {
-//				throw new AddAccountException("Account balance cannot be String");
-//			}
 
 			try {
 				int clientId = Integer.parseInt(stringId);
@@ -80,7 +77,9 @@ public class AccountService {
 				connection.commit(); // When changes will actually be persisted
 				return account;
 			} catch (NumberFormatException e) {
-				throw new BadParameterException("Client id must be an int. User provided " + stringId);
+				throw new BadParameterException("Account id must be an int. User provided " + stringId);
+			} catch (NullPointerException e) {
+				throw new NullPointerException("Cannot be blank account");
 			}
 
 		} catch (SQLException e) {
@@ -118,7 +117,7 @@ public class AccountService {
 	public Account getAccountById(String accountId)
 			throws NoAccountsException, BadParameterException, DatabaseException {
 		try {
-			int id = Integer.parseInt(accountId);
+			//int id = Integer.parseInt(accountId);
 
 			Account account = accountRepository.getAccountByAccountId(accountId);
 
@@ -136,7 +135,7 @@ public class AccountService {
 	public Account updateAccount(String accountId, PostAccountDTO accountDTO)
 			throws BadParameterException, DatabaseException, NoAccountsException {
 		try {
-
+			Integer.parseInt(accountId);
 			getAccountById(accountId);// check that account id exists
 
 			Account account = accountRepository.updateAccountById(accountId, accountDTO);
@@ -150,7 +149,7 @@ public class AccountService {
 	public void deleteAccount(String accountId)
 			throws NoAccountsException, BadParameterException, DatabaseException, SQLException {
 		try {
-
+			Integer.parseInt(accountId);
 			getAccountById(accountId);// check that account id exists
 
 			accountRepository.deleteAccountById(accountId);

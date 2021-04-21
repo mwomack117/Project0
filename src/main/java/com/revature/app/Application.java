@@ -25,7 +25,7 @@ public class Application {
 			logger.info(httpMethod + " request to endpoint " + URI + " received");
 		});
 	
-		mapControllers(new ClientController(), new AccountController(),new ExceptionController());
+		mapControllers(new ClientController(), new AccountController(), new ExceptionController());
 		
 		app.start(7001);
 		

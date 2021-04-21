@@ -115,7 +115,6 @@ public class ClientRepository {
 			if (recordsAdded > 0) {
 				int id = Integer.parseInt(clientId);
 				Client updatedClient = new Client(id, clientDTO.getFirstName(), clientDTO.getLastName());
-				//updatedClient.setAccounts(new ArrayList<>());
 				return updatedClient;
 			} else {
 				throw new DatabaseException("Client id was not found, and therefore client update failed");
